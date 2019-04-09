@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 void main() async {
   runApp(MyApp());
 }
@@ -21,44 +20,39 @@ final ThemeData kDefaultTheme = ThemeData(
   accentColor: Colors.deepOrangeAccent[400],
 );
 
-final googleSingIn = GoogleSignIn(); 
-final auth = FirebaseAuth.instance; 
+final googleSingIn = GoogleSignIn();
+final auth = FirebaseAuth.instance;
 
-Future<Null> _ensureLoggedIn() async{
-  GoogleSignInAccount user = googleSingIn.currentUser; 
-  
-  if(user == null)
-    user = await googleSingIn.signInSilently();
+Future<Null> _ensureLoggedIn() async {
+  GoogleSignInAccount user = googleSingIn.currentUser;
 
-  if(user == null )
-    user = await googleSingIn.signIn(); 
+  if (user == null) user = await googleSingIn.signInSilently();
 
-  if(await auth.currentUser() == null){
-    GoogleSignInAuthentication credentials = await googleSingIn.currentUser.authentication;
+  if (user == null) user = await googleSingIn.signIn();
+
+  if (await auth.currentUser() == null) {
+    GoogleSignInAuthentication credentials =
+        await googleSingIn.currentUser.authentication;
 
     await auth.signInWithCredential(GoogleAuthProvider.getCredential(
-      idToken: credentials.idToken,
+      idToken: credentials.idToken, 
       accessToken: credentials.accessToken
-      )
-    );
-  
+    ));
   }
 }
 
-_handleSubmitted(String text) async{
-  await _ensureLoggedIn(); 
+_handleSubmitted(String text) async {
+  await _ensureLoggedIn();
   _sendMenssage(text: text);
 }
 
-void _sendMenssage({String text, String imgUrl}){
-  Firestore.instance.collection("messages").add(
-    {
-      "text": text,
-      "imgUrl": imgUrl,
-      "senderName": googleSingIn.currentUser.displayName, 
-      "senderPhotoUrl": googleSingIn.currentUser.photoUrl
-    }
-  );
+void _sendMenssage({String text, String imgUrl}) {
+  Firestore.instance.collection("messages").add({
+    "text": text,
+    "imgUrl": imgUrl,
+    "senderName": googleSingIn.currentUser.displayName,
+    "senderPhotoUrl": googleSingIn.currentUser.photoUrl
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -130,8 +124,8 @@ class TextComposer extends StatefulWidget {
 }
 
 class _TextComposerState extends State<TextComposer> {
-  final _textController = TextEditingController();  
-  
+  final _textController = TextEditingController();
+
   bool _isComposing = false;
 
   @override
@@ -162,7 +156,7 @@ class _TextComposerState extends State<TextComposer> {
                     _isComposing = text.length > 0;
                   });
                 },
-                onSubmitted: (text){
+                onSubmitted: (text) {
                   _handleSubmitted(text);
                 },
               ),
@@ -172,9 +166,11 @@ class _TextComposerState extends State<TextComposer> {
               child: Theme.of(context).platform == TargetPlatform.iOS
                   ? CupertinoButton(
                       child: Text("Enviar"),
-                      onPressed: _isComposing ? () {
-                        _handleSubmitted(_textController.text);
-                      } : null,
+                      onPressed: _isComposing
+                          ? () {
+                              _handleSubmitted(_textController.text);
+                            }
+                          : null,
                     )
                   : IconButton(
                       icon: Icon(Icons.send),
@@ -201,7 +197,8 @@ class ChatMessage extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: 16.0),
             child: CircleAvatar(
-              backgroundImage: NetworkImage("https://www.redwolf.in/image/catalog/artwork-Images/mens/iron-man-mask-design-image'.png"),
+              backgroundImage: NetworkImage(
+                  "https://www.redwolf.in/image/catalog/artwork-Images/mens/iron-man-mask-design-image'.png"),
             ),
           ),
           Expanded(
